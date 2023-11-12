@@ -1029,7 +1029,11 @@ get_script_content(unsigned n UNUSED_PARAM)
 #if ENABLE_BUILD_LIBBUSYBOX
 int lbb_main(char **argv)
 #else
+#ifdef __wasm__
+int __original_main(int argc UNUSED_PARAM, char **argv, char **envp UNUSED_PARAM)
+#else
 int main(int argc UNUSED_PARAM, char **argv)
+#endif
 #endif
 {
 #if 0

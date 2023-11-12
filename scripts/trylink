@@ -93,10 +93,10 @@ if ! check_cc "-Wl,--sort-section,alignment"; then
     SORT_SECTION=""
 fi
 
-START_GROUP="-Wl,--start-group"
-END_GROUP="-Wl,--end-group"
+START_GROUP=
+END_GROUP=
 INFO_OPTS() {
-	echo "-Wl,--warn-common -Wl,-Map,$EXE.map -Wl,--verbose"
+	echo "-Wl,-Map,$EXE.map -Wl,--verbose"
 }
 
 # gold may not support --sort-common (yet)
@@ -129,6 +129,8 @@ fi
 # Sanitize lib list (dups, extra spaces etc)
 LDLIBS=`echo "$LDLIBS" | xargs -n1 | sort | uniq | xargs`
 
+WASMLINUX_OPTS="-Wl,--no-entry -Wl,--export=_start_c /home/oku/repos/musl/prefix/lib/crt1.o /home/oku/repos/musl/prefix/lib/libc.a"
+
 # First link with all libs. If it fails, bail out
 echo "Trying libraries: $LDLIBS"
 # "lib1 lib2 lib3" -> "-llib1 -llib2 -llib3"
@@ -140,6 +142,7 @@ try $CC $CFLAGS $LDFLAGS \
 	$SORT_SECTION \
 	$GC_SECTIONS \
 	$START_GROUP $O_FILES $A_FILES $END_GROUP \
+        $WASMLINUX_OPTS \
 	$l_list \
 || {
     echo "Failed: $l_list"
@@ -167,6 +170,7 @@ while test "$LDLIBS"; do
 		$SORT_SECTION \
 		$GC_SECTIONS \
 		$START_GROUP $O_FILES $A_FILES $END_GROUP \
+                $WASMLINUX_OPTS \
 		$l_list
 	if test $? = 0; then
 	    echo " Library $one is not needed, excluding it"
@@ -196,6 +200,7 @@ if ! test -f busybox_ldscript; then
 	    $SORT_SECTION \
 	    $GC_SECTIONS \
 	    $START_GROUP $O_FILES $A_FILES $END_GROUP \
+            $WASMLINUX_OPTS \
 	    $l_list \
 	    `INFO_OPTS` \
     || {

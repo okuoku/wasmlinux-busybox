@@ -129,7 +129,8 @@ fi
 # Sanitize lib list (dups, extra spaces etc)
 LDLIBS=`echo "$LDLIBS" | xargs -n1 | sort | uniq | xargs`
 
-WASMLINUX_OPTS="-Wl,--no-entry -Wl,--export=_start_c /home/oku/repos/musl/prefix/lib/crt1.o /home/oku/repos/musl/prefix/lib/libc.a"
+WASMLINUX_PREFIX=/cygdrive/d/wasmlinux/prefix
+WASMLINUX_OPTS="-Wl,--no-entry -Wl,--export=_start_c $WASMLINUX_PREFIX/lib/crt1.o $WASMLINUX_PREFIX/lib/libc.a"
 
 # First link with all libs. If it fails, bail out
 echo "Trying libraries: $LDLIBS"
